@@ -5,7 +5,6 @@ dotenv.config();
 
 export default defineConfig({
   testDir: "./tests",
-  globalSetup: "./global-setup.ts",
   reporter: [["list"], ["html", { open: "never" }], ["junit", { outputFile: "test-results/results.xml" }]],
   fullyParallel: true,
   retries: 1,
@@ -21,8 +20,8 @@ export default defineConfig({
   },
   projects: [
     {
-      name: "ui",
-      testDir: "./tests/ui",
+      name: "e2e",
+      testDir: "./tests/e2e",
       retries: 2,
     },
     {
