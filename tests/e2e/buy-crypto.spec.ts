@@ -12,6 +12,11 @@ test.describe("search tests", () => {
 
   test("TODO", async ({ page }) => {
     //TODO add some tests here
+    page.on("console", (msg) => {
+      if (msg.type() === "error") {
+        console.error(`Console error: ${msg.text()}`);
+      }
+    });
   });
 
   test.afterEach(async ({ page }, testInfo) => {

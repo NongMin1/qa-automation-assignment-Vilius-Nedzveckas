@@ -1,7 +1,7 @@
 import { Page } from "@playwright/test";
 
 export async function acceptCookies(page: Page): Promise<void> {
-  const acceptButton = page.getByTestId("onetrust-accept-btn-handler");
+  const acceptButton = page.getByRole("button", { name: "Accept All" });
 
   try {
     await acceptButton.waitFor({ state: "visible", timeout: 5000 });
