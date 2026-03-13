@@ -3,13 +3,25 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed --workers=1",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "test:api": "playwright test --project=api",
+    "test:ui-only": "playwright test --project=ui",
+    "test:api:headed": "playwright test --project=api --headed --workers=1",
+    "test:api:debug": "playwright test --project=api --debug",
+    "report": "playwright show-report",
+    "trace": "playwright show-trace",
+    "pw:install": "playwright install"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/NongMin1/qa-automation-assignment-Vilius-Nedzveckas.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Vilius Nedzveckas",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
