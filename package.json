@@ -1,0 +1,26 @@
+{
+  "name": "qa-automation-assignment-vilius-nedzveckas",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NongMin1/qa-automation-assignment-Vilius-Nedzveckas.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/NongMin1/qa-automation-assignment-Vilius-Nedzveckas/issues"
+  },
+  "homepage": "https://github.com/NongMin1/qa-automation-assignment-Vilius-Nedzveckas#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@types/node": "^25.5.0"
+  },
+  "dependencies": {
+    "dotenv": "^17.3.1"
+  }
+}
