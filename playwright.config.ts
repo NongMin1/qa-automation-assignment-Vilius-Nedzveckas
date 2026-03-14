@@ -1,30 +1,41 @@
-import { defineConfig } from "@playwright/test";
+import { defineConfig, devices } from "@playwright/test";
 import dotenv from "dotenv";
+import path from "path";
 
+// Load environment variables
 dotenv.config();
+
+const isCI = !!process.env.CI;
 
 export default defineConfig({
   globalSetup: require.resolve("./global-setup.ts"),
   testDir: "./tests",
-  reporter: [["list"], ["html", { open: "never" }], ["junit", { outputFile: "test-results/results.xml" }]],
   fullyParallel: true,
-  retries: 1,
+  retries: isCI ? 2 : 0,
+  workers: isCI ? 2 : undefined,
+
+  reporter: isCI ? [["github"], ["list"], ["html", { open: "never" }], ["junit", { outputFile: "test-results/results.xml" }]] : [["list"], ["html", { open: "on-failure" }]],
+
   use: {
-    storageState: "storageState.json",
-    baseURL: process.env.BASE_URL,
-    browserName: "chromium",
-    screenshot: "only-on-failure",
-    trace: "on-first-retry",
-    video: "retain-on-failure",
+    baseURL: process.env.BASE_URL || "",
+    storageState: "playwright/.auth/storageState.json",
+    screenshot: {
+      mode: "only-on-failure",
+    },
+    trace: "retain-on-failure",
+    video: "on-first-retry",
+
     launchOptions: {
-      args: ["--disable-extensions", "--disable-infobars", "--disable-web-security", "--disable-features=IsolateOrigins,site-per-process"],
+      slowMo: isCI ? 0 : 100,
+      args: ["--disable-extensions", "--disable-web-security"],
     },
   },
+
   projects: [
     {
       name: "e2e",
       testDir: "./tests/e2e",
-      retries: 2,
+      use: { ...devices["Desktop Chrome"] },
     },
     {
       name: "api",
@@ -32,7 +43,8 @@ export default defineConfig({
       fullyParallel: false,
       use: {
         extraHTTPHeaders: {
-          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+          "User-Agent": "Playwright-Automation",
+          Accept: "application/json",
         },
       },
     },
