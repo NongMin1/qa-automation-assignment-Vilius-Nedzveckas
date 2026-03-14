@@ -4,11 +4,13 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export default defineConfig({
+  globalSetup: require.resolve("./global-setup.ts"),
   testDir: "./tests",
   reporter: [["list"], ["html", { open: "never" }], ["junit", { outputFile: "test-results/results.xml" }]],
   fullyParallel: true,
   retries: 1,
   use: {
+    storageState: "storageState.json",
     baseURL: process.env.BASE_URL,
     browserName: "chromium",
     screenshot: "only-on-failure",
