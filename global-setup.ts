@@ -13,7 +13,7 @@ async function globalSetup(config: FullConfig) {
 
   await page.goto(baseURL);
   const acceptButton = page.getByRole("button", { name: "Accept All" });
-
+  //TODO: add a check for cookie banner presence to avoid unnecessary waiting
   if (await acceptButton.isVisible()) {
     await acceptButton.waitFor({ state: "visible", timeout: 5000 });
     await acceptButton.click();
