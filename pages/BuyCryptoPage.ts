@@ -1,7 +1,7 @@
 import { Locator, FrameLocator, Page, expect } from "@playwright/test";
+import { BasePage } from "./BasePage";
 
-export class BuyCryptoPage {
-  readonly page: Page;
+export class BuyCryptoPage extends BasePage {
   readonly widgetFrame: FrameLocator;
   readonly cryptoAmountInput: Locator;
   readonly cryptoDropdownTrigger: Locator;
@@ -10,7 +10,7 @@ export class BuyCryptoPage {
   readonly continueButton: Locator;
 
   constructor(page: Page) {
-    this.page = page;
+    super(page);
     this.widgetFrame = page.frameLocator('iframe[src*="/form"]');
     this.cryptoAmountInput = this.widgetFrame.locator("#crypto_amount");
     this.fiatAmountInput = this.widgetFrame.locator("#fiat_amount");
