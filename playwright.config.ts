@@ -15,7 +15,7 @@ export default defineConfig({
     trace: "on-first-retry",
     video: "retain-on-failure",
     launchOptions: {
-      args: ["--disable-extensions", "--disable-infobars"],
+      args: ["--disable-extensions", "--disable-infobars", "--disable-web-security", "--disable-features=IsolateOrigins,site-per-process"],
     },
   },
   projects: [
