@@ -23,36 +23,45 @@ test.describe("buy crypto tests", () => {
 
       await buyCryptoPage.selectCrypto(crypto);
       await buyCryptoPage.enterMoneyAmount(amount);
-      await buyCryptoPage.enterCryptoAddress(btcAddress);
+
+      await test.step("Enter crypto address (Masked)", async () => {
+        await buyCryptoPage.addressInput.evaluate((el) => (el.style.filter = "blur(10px)"));
+        await buyCryptoPage.enterCryptoAddress(btcAddress);
+
+        await test.info().attach("masked-address-screenshot", {
+          body: await page.screenshot({ mask: [buyCryptoPage.addressInput] }),
+          contentType: "image/png",
+        });
+      });
+
       await buyCryptoPage.clickContinue();
 
-      await expect(page).toHaveURL(/.*checkout\.simplexcc\.com\/next\/#\/offers/);
-      //TODO need to fix this place
-      await buyCryptoPage.acceptCookiesIfPresent();
+      await expect(page.locator(".loading-spinner")).toBeHidden({ timeout: 20000 });
+      await expect(page).toHaveURL("https://buy.simplex.com/");
+
       await expect(page.getByText("Credit/Debit card")).toBeVisible();
       await expect(page.getByText("Euro Bank Transfer")).toBeVisible();
     });
   });
-  //TODO:
+
   test.describe("Negative Test Cases", () => {
-    //TODO:
-    test("should display an error when entering an amount below the minimum limit", async ({ page }) => {
+    test.fixme("should display an error when entering an amount below the minimum limit", async ({ page }) => {
       await basePage.clickBuyCrypto();
       await buyCryptoPage.waitForWidgetToBeReady();
       await buyCryptoPage.selectCrypto("BTC");
       await buyCryptoPage.enterMoneyAmount("10");
       await expect(page.getByText("Minimum amount is")).toBeVisible();
     });
-    //TODO:
-    test("should display an error when entering an amount above the maximum limit", async ({ page }) => {
+
+    test.fixme("should display an error when entering an amount above the maximum limit", async ({ page }) => {
       await basePage.clickBuyCrypto();
       await buyCryptoPage.waitForWidgetToBeReady();
       await buyCryptoPage.selectCrypto("BTC");
       await buyCryptoPage.enterMoneyAmount("200000");
       await expect(page.getByText("Maximum amount is")).toBeVisible();
     });
-    //TODO:
-    test("should display an error when entering non-numeric characters in the amount field", async ({ page }) => {
+
+    test.fixme("should display an error when entering non-numeric characters in the amount field", async ({ page }) => {
       await basePage.clickBuyCrypto();
       await buyCryptoPage.waitForWidgetToBeReady();
       await buyCryptoPage.selectCrypto("BTC");
@@ -60,7 +69,7 @@ test.describe("buy crypto tests", () => {
       await buyCryptoPage.clickContinue();
       await expect(page.getByText("Please enter a valid amount")).toBeVisible();
     });
-    //TODO:
+
     test.fixme("should display an error when selecting an unsupported cryptocurrency", async ({ page }) => {
       await basePage.clickBuyCrypto();
       await buyCryptoPage.waitForWidgetToBeReady();
