@@ -36,8 +36,8 @@ test.describe("buy crypto tests", () => {
 
       await buyCryptoPage.clickContinue();
 
-      await expect(page.locator(".loading-spinner")).toBeHidden({ timeout: 20000 });
-      await expect(page).toHaveURL(/.*simplexcc\.com.*/, { timeout: 15000 });
+      await expect(page.locator(".loading-spinner")).toBeHidden({ timeout: 30000 });
+      await expect(page).toHaveURL(/.*simplexcc\.com.*/, { timeout: 20000 }); //https://checkout.simplexcc.com/next/#/?sid=4ecb95c7-1194-4831-9fb8-c290776facbe
 
       await expect(page.getByText("Credit/Debit card")).toBeVisible({ timeout: 15000 });
       await expect(page.getByText("Euro Bank Transfer")).toBeVisible({ timeout: 15000 });
