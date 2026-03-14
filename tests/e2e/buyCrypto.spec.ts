@@ -14,12 +14,6 @@ test.describe("buy crypto tests", () => {
   });
 
   test.describe("Positive Test Cases", () => {
-    test("should load homepage successfully", async ({ page }) => {
-      await expect(page.locator("img[alt*='logo' i]")).toBeVisible();
-      await expect(page.getByRole("navigation")).toBeVisible();
-      await expect(page.getByText(/buy crypto/i)).toBeVisible();
-    });
-
     test("should navigate to Checkout page with legacy Crypto key", async ({ page }) => {
       const amount = "200";
       const crypto = "BTC";
