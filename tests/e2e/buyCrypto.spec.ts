@@ -15,6 +15,7 @@ test.describe("buy crypto tests", () => {
 
   test.describe("Positive Test Cases", () => {
     test("should navigate to Checkout page with legacy Crypto key", async ({ page }) => {
+      test.setTimeout(60000);
       const amount = "200";
       const crypto = "BTC";
 

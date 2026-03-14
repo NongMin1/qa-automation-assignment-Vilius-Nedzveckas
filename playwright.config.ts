@@ -1,8 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
 import dotenv from "dotenv";
-import path from "path";
 
-// Load environment variables
 dotenv.config();
 
 const isCI = !!process.env.CI;
@@ -13,7 +11,6 @@ export default defineConfig({
   fullyParallel: true,
   retries: isCI ? 2 : 0,
   workers: isCI ? 2 : undefined,
-
   reporter: isCI ? [["github"], ["list"], ["html", { open: "never" }], ["junit", { outputFile: "test-results/results.xml" }]] : [["list"], ["html", { open: "on-failure" }]],
 
   use: {
@@ -24,7 +21,6 @@ export default defineConfig({
     },
     trace: "retain-on-failure",
     video: "on-first-retry",
-
     launchOptions: {
       slowMo: isCI ? 0 : 100,
       args: ["--disable-extensions", "--disable-web-security"],
