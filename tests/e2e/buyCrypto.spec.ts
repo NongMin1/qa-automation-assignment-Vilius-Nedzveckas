@@ -15,6 +15,14 @@ test.describe("buy crypto tests", () => {
 
   test.describe("Positive Test Cases", () => {
     test("should navigate to Checkout page with legacy Crypto key", async ({ page }) => {
+      await page.route("https://pulse.walletconnect.org/**", async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({ success: true }),
+        });
+      });
+
       test.setTimeout(60000);
       const amount = "200";
       const crypto = "BTC";
@@ -38,7 +46,7 @@ test.describe("buy crypto tests", () => {
       await buyCryptoPage.clickContinue();
 
       await expect(page.locator(".loading-spinner")).toBeHidden({ timeout: 30000 });
-      await expect(page).toHaveURL(/.*simplexcc\.com.*/, { timeout: 45000 });
+      await expect(page).toHaveURL(/.*simplexcc\.com.*/, { timeout: 60000 });
 
       await expect(page.getByText("Credit/Debit card")).toBeVisible({ timeout: 15000 });
       await expect(page.getByText("Euro Bank Transfer")).toBeVisible({ timeout: 15000 });
