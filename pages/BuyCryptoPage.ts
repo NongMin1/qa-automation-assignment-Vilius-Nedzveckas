@@ -10,6 +10,7 @@ export class BuyCryptoPage extends BasePage {
   readonly addressInput: Locator;
   readonly continueButton: Locator;
   readonly errorMessage: Locator;
+  readonly loadingSpinner: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -17,10 +18,11 @@ export class BuyCryptoPage extends BasePage {
     this.cryptoAmountInput = this.widgetFrame.locator('input[name="crypto_amount"]');
     this.fiatAmountInput = this.widgetFrame.locator('input[name="fiat_amount"]');
     this.fiatDropdownTrigger = this.widgetFrame.locator("input.fiat-dd");
-    this.addressInput = this.widgetFrame.locator('input[name="cryptoAddress"]');
+    this.addressInput = this.widgetFrame.locator('input[id="cryptoAddress"]');
     this.continueButton = this.widgetFrame.locator("button.simplex-continue-button");
     this.cryptoDropdownTrigger = this.widgetFrame.locator("input.crypto-dd");
     this.errorMessage = this.widgetFrame.locator("div.error-tooltip");
+    this.loadingSpinner = page.locator(".loading-spinner");
   }
 
   async navigateToWidget(fiat: string) {
@@ -60,6 +62,10 @@ export class BuyCryptoPage extends BasePage {
 
   async enterCryptoAddress(address: string) {
     await this.addressInput.fill(address);
+  }
+
+  async maskAddressInput() {
+    await this.addressInput.evaluate((el) => (el.style.filter = "blur(10px)"));
   }
 
   async clickContinue() {
