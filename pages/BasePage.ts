@@ -10,7 +10,7 @@ export class BasePage {
     this.page = page;
 
     this.logo = page.locator("header").getByAltText("Simplex");
-    this.mainMenu = page.getByRole("list");
+    this.mainMenu = page.locator("header").getByRole("list");
     this.buyCryptoButton = page.getByRole("link", { name: "Buy Crypto" });
   }
 
