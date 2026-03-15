@@ -38,7 +38,9 @@ test.describe("buy crypto tests", () => {
       await buyCryptoPage.clickContinue();
 
       await buyCryptoPage.loadingSpinner.waitFor({ state: "hidden", timeout: 30000 });
-      await expect(page).toHaveURL(/.*simplexcc\.com.*/, { timeout: 60000 });
+
+      const currentUrl = page.url();
+      expect(currentUrl.includes("simplexcc.com, { timeout: 60000 }")).toBeTruthy();
 
       await expect(page.getByText("Credit/Debit card")).toBeVisible({ timeout: 15000 });
       await expect(page.getByText("Euro Bank Transfer")).toBeVisible({ timeout: 15000 });
