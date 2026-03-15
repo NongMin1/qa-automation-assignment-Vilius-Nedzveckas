@@ -14,8 +14,8 @@ test.describe("buy crypto tests", () => {
   });
 
   test.describe("Positive Test Cases", () => {
-    test.only("should navigate to Checkout page with legacy Crypto key", async ({ page }) => {
-      //DOES IT HELP? How to solve problem in GitHub Actions where the test gets stuck on walletconnect request?
+    test.fixme("should navigate to Checkout page with legacy Crypto key", async ({ page }) => {
+      //How to solve problem in GitHub Actions where the test gets stuck on walletconnect request?
       //TODO - headless and headed works locally. In CI it gets stuck on walletconnect request. https://pulse.walletconnect.org/e?projectId={someid} ends with Status code = 400.
       //Payload response: Bad Request - Missing origin header.
       test.setTimeout(60000);
