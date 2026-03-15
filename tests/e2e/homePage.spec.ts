@@ -20,17 +20,22 @@ test.describe("Home Page Navigation", () => {
     });
 
     test.describe("Menu Navigation Test Cases", () => {
-      for (const { category, item, expectedUrlPart, isExternal } of NAV_MENU_ITEMS) {
-        test(`Should navigate to ${category} > ${item}`, async ({ page, context }) => {
-          if (isExternal) {
-            const pagePromise = context.waitForEvent("page");
-            await basePage.navigateToMenuItem(category, item);
-            const newPage = await pagePromise;
-            await expect(newPage).toHaveURL(new RegExp(expectedUrlPart, "i"));
-          } else {
-            await basePage.navigateToMenuItem(category, item);
-            await expect(page).toHaveURL(new RegExp(expectedUrlPart, "i"));
-          }
+      const internalItems = NAV_MENU_ITEMS.filter((item) => !item.isExternal);
+      const externalItems = NAV_MENU_ITEMS.filter((item) => item.isExternal);
+
+      for (const { category, item, expectedUrlPart } of internalItems) {
+        test(`Should navigate to ${category} > ${item}`, async ({ page }) => {
+          await basePage.navigateToMenuItem(category, item);
+          await expect(page).toHaveURL(new RegExp(expectedUrlPart, "i"));
+        });
+      }
+
+      for (const { category, item, expectedUrlPart } of externalItems) {
+        test(`Should navigate to ${category} > ${item}`, async ({ context }) => {
+          const pagePromise = context.waitForEvent("page");
+          await basePage.navigateToMenuItem(category, item);
+          const newPage = await pagePromise;
+          await expect(newPage).toHaveURL(new RegExp(expectedUrlPart, "i"));
         });
       }
     });
