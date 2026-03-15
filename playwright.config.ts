@@ -1,17 +1,14 @@
-import { defineConfig, devices } from "@playwright/test";
+import { defineConfig } from "@playwright/test";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-const isCI = !!process.env.CI;
-
 export default defineConfig({
   globalSetup: require.resolve("./global-setup.ts"),
   testDir: "./tests",
+  reporter: [["list"], ["html", { open: "never" }], ["junit", { outputFile: "test-results/results.xml" }]],
   fullyParallel: true,
-  retries: isCI ? 2 : 0,
-  workers: isCI ? 2 : undefined,
-  reporter: isCI ? [["github"], ["list"], ["html", { open: "never" }], ["junit", { outputFile: "test-results/results.xml" }]] : [["list"], ["html", { open: "on-failure" }]],
+  retries: 1,
 
   use: {
     baseURL: process.env.BASE_URL || "",
@@ -22,7 +19,6 @@ export default defineConfig({
     trace: "retain-on-failure",
     video: "on-first-retry",
     launchOptions: {
-      slowMo: isCI ? 0 : 100,
       args: ["--disable-extensions", "--disable-web-security"],
     },
   },
@@ -31,7 +27,8 @@ export default defineConfig({
     {
       name: "e2e",
       testDir: "./tests/e2e",
-      use: { ...devices["Desktop Chrome"] },
+      retries: 2,
+      fullyParallel: true,
     },
     {
       name: "api",
