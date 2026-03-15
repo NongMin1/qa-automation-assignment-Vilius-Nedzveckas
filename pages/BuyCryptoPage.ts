@@ -6,6 +6,7 @@ export class BuyCryptoPage extends BasePage {
   readonly cryptoAmountInput: Locator;
   readonly cryptoDropdownTrigger: Locator;
   readonly fiatAmountInput: Locator;
+  readonly fiatDropdownTrigger: Locator;
   readonly addressInput: Locator;
   readonly continueButton: Locator;
   readonly erroMessage: Locator;
@@ -15,6 +16,7 @@ export class BuyCryptoPage extends BasePage {
     this.widgetFrame = page.frameLocator('iframe[src*="/form"]');
     this.cryptoAmountInput = this.widgetFrame.locator("#crypto_amount");
     this.fiatAmountInput = this.widgetFrame.locator("#fiat_amount");
+    this.fiatDropdownTrigger = this.widgetFrame.locator("input.fiat-dd");
     this.addressInput = this.widgetFrame.locator("#cryptoAddress");
     this.continueButton = this.widgetFrame.locator("button.simplex-continue-button");
     this.cryptoDropdownTrigger = this.widgetFrame.locator("input.crypto-dd");
@@ -39,6 +41,17 @@ export class BuyCryptoPage extends BasePage {
       await option.click();
 
       await expect(this.cryptoDropdownTrigger).toHaveAttribute("value", new RegExp(crypto));
+    }
+  }
+
+  async selectFiatCurrency(currency: string) {
+    const fullValue = await this.fiatDropdownTrigger.getAttribute("value");
+    const currentValue = fullValue?.split(" ")[0];
+
+    if (currentValue !== currency) {
+      await this.fiatDropdownTrigger.click();
+      const option = this.widgetFrame.locator("ul.autocomplete-results li").getByText(currency, { exact: true });
+      await option.click();
     }
   }
 

@@ -22,9 +22,11 @@ test.describe("buy crypto tests", () => {
       test.setTimeout(60000);
       const amount = "200";
       const crypto = "BTC";
+      const fiat = "EUR";
 
       await basePage.clickBuyCrypto();
       await buyCryptoPage.waitForWidgetToBeReady();
+      await buyCryptoPage.selectFiatCurrency(fiat);
 
       await buyCryptoPage.selectCrypto(crypto);
       await buyCryptoPage.enterMoneyAmount(amount);
@@ -51,37 +53,48 @@ test.describe("buy crypto tests", () => {
 
   test.describe("Negative Test Cases", () => {
     test("should display an error when entering an amount below the minimum limit", async ({}) => {
+      const fiat = "EUR";
       await basePage.clickBuyCrypto();
       await buyCryptoPage.waitForWidgetToBeReady();
+      await buyCryptoPage.selectFiatCurrency(fiat);
+      await buyCryptoPage.enterMoneyAmount("BTC");
       await buyCryptoPage.enterMoneyAmount("1");
       await expect(buyCryptoPage.erroMessage).toContainText(/The Euro amount must be between/);
     });
 
     test("should display an error when entering an amount above the maximum limit", async ({}) => {
+      const fiat = "EUR";
       await basePage.clickBuyCrypto();
       await buyCryptoPage.waitForWidgetToBeReady();
+      await buyCryptoPage.selectFiatCurrency(fiat);
       await buyCryptoPage.enterMoneyAmount("200000");
       await expect(buyCryptoPage.erroMessage).toContainText(/The Euro amount must be between/);
     });
 
     test("should display an error when entering non-numeric characters in the amount field", async ({}) => {
+      const fiat = "EUR";
       await basePage.clickBuyCrypto();
       await buyCryptoPage.waitForWidgetToBeReady();
+      await buyCryptoPage.selectFiatCurrency(fiat);
       await buyCryptoPage.enterMoneyAmount("abc");
       await buyCryptoPage.clickContinue();
       await expect(buyCryptoPage.erroMessage).toContainText(/Please enter Euro amount/);
     });
 
     test("should display an error when entering non-numeric characters in the crypto amount field", async ({}) => {
+      const fiat = "EUR";
       await basePage.clickBuyCrypto();
       await buyCryptoPage.waitForWidgetToBeReady();
+      await buyCryptoPage.selectFiatCurrency(fiat);
       await buyCryptoPage.enterCryptoAmount("abc");
       await expect(buyCryptoPage.erroMessage).toContainText(/Please enter Bitcoin amount/);
     });
 
     test.fixme("should display an error when entering an invalid crypto address", async ({ page }) => {
+      const fiat = "EUR";
       await basePage.clickBuyCrypto();
       await buyCryptoPage.waitForWidgetToBeReady();
+      await buyCryptoPage.selectFiatCurrency(fiat);
       await buyCryptoPage.enterMoneyAmount("200");
       await buyCryptoPage.enterCryptoAddress("asd");
       await buyCryptoPage.clickContinue();
