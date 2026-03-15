@@ -10,7 +10,7 @@ export class BasePage {
     this.page = page;
 
     this.logo = page.locator("header").getByAltText("Simplex");
-    this.mainMenu = page.locator("#menu-main-menu");
+    this.mainMenu = page.getByRole("list");
     this.buyCryptoButton = page.getByRole("link", { name: "Buy Crypto" });
   }
 
@@ -24,10 +24,10 @@ export class BasePage {
   }
 
   async navigateToMenuItem(category: string, menuItem: string) {
-    const parentMenu = this.page.locator("#menu-main-menu").getByRole("link", { name: category });
+    const parentMenu = this.mainMenu.getByRole("link", { name: category });
     await parentMenu.hover();
 
-    const subItem = this.page.locator("#menu-main-menu").getByRole("link", { name: menuItem });
+    const subItem = this.mainMenu.getByRole("link", { name: menuItem });
     await subItem.click();
   }
 }
