@@ -6,7 +6,7 @@ dotenv.config();
 export default defineConfig({
   globalSetup: require.resolve("./global-setup.ts"),
   testDir: "./tests",
-  reporter: [["list"], ["html", { open: "never" }], ["junit", { outputFile: "test-results/results.xml" }]],
+  reporter: [["list"], ["html", { open: "never" }]],
   fullyParallel: true,
   retries: 1,
 
