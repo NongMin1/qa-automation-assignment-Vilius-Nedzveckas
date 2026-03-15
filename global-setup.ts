@@ -14,9 +14,7 @@ async function globalSetup(config: FullConfig) {
   await page.goto(baseURL);
   const acceptButton = page.getByRole("button", { name: "Accept All" });
 
-  try {
-    await acceptButton.click({ timeout: 5000 });
-  } catch (e) {}
+  await acceptButton.click({ timeout: 5000 }).catch(() => console.log("Cookie banner not found, continuing..."));
 
   await page.context().storageState({ path: storageState });
   await browser.close();
