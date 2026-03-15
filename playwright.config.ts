@@ -19,8 +19,9 @@ export default defineConfig({
     trace: "retain-on-failure",
     video: "on-first-retry",
     launchOptions: {
-      args: ["--disable-extensions", "--disable-web-security"],
+      args: ["--disable-extensions", "--disable-infobars", "--disable-web-security", "--disable-features=IsolateOrigins,site-per-process"],
     },
+    userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
   },
 
   projects: [
