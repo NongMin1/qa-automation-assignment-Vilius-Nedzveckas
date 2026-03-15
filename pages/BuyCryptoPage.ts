@@ -44,7 +44,7 @@ export class BuyCryptoPage extends BasePage {
     if (currentValue !== value) {
       await trigger.click();
       await trigger.fill(value);
-      const option = this.widgetFrame.locator("ul.autocomplete-results li").getByText(value, { exact: true });
+      const option = this.widgetFrame.getByText(value);
       await option.waitFor({ state: "visible" });
       await option.click();
     }
