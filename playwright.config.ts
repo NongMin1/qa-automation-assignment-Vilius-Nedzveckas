@@ -6,10 +6,9 @@ dotenv.config();
 export default defineConfig({
   globalSetup: require.resolve("./global-setup.ts"),
   testDir: "./tests",
-  reporter: [["list"], ["html", { open: "never" }]],
+  reporter: [["list"], ["html", { open: "never" }], ["junit", { outputFile: "test-results/results.xml" }]],
   fullyParallel: true,
   retries: 1,
-  timeout: process.env.CI ? 60 * 1000 : 30 * 1000,
   use: {
     baseURL: process.env.BASE_URL || "",
     storageState: "playwright/.auth/storageState.json",
