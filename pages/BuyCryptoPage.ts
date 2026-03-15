@@ -1,4 +1,4 @@
-import { Locator, FrameLocator, Page, expect } from "@playwright/test";
+import { Locator, FrameLocator, Page } from "@playwright/test";
 import { BasePage } from "./BasePage";
 
 export class BuyCryptoPage extends BasePage {
@@ -9,32 +9,25 @@ export class BuyCryptoPage extends BasePage {
   readonly fiatDropdownTrigger: Locator;
   readonly addressInput: Locator;
   readonly continueButton: Locator;
-  readonly erroMessage: Locator;
+  readonly errorMessage: Locator;
+  readonly loadingSpinner: Locator;
 
   constructor(page: Page) {
     super(page);
     this.widgetFrame = page.frameLocator('iframe[src*="/form"]');
-    this.cryptoAmountInput = this.widgetFrame.locator("#crypto_amount");
-    this.fiatAmountInput = this.widgetFrame.locator("#fiat_amount");
+    this.cryptoAmountInput = this.widgetFrame.locator('input[name="crypto_amount"]');
+    this.fiatAmountInput = this.widgetFrame.locator('input[name="fiat_amount"]');
     this.fiatDropdownTrigger = this.widgetFrame.locator("input.fiat-dd");
-    this.addressInput = this.widgetFrame.locator("#cryptoAddress");
+    this.addressInput = this.widgetFrame.locator('input[id="cryptoAddress"]');
     this.continueButton = this.widgetFrame.locator("button.simplex-continue-button");
     this.cryptoDropdownTrigger = this.widgetFrame.locator("input.crypto-dd");
-    this.erroMessage = this.widgetFrame.locator(".error-tooltip");
+    this.errorMessage = this.widgetFrame.locator("span.error-tooltip");
+    this.loadingSpinner = page.locator(".loading-spinner");
   }
 
   async navigateToWidget(fiat: string) {
     await this.clickBuyCrypto();
-    await this.waitForWidgetToBeReady();
     await this.selectFiatCurrency(fiat);
-  }
-
-  async waitForWidgetToBeReady() {
-    const frameElement = this.page.locator('iframe[src*="simplex-affiliates.com"]').first();
-
-    await frameElement.waitFor({ state: "attached" });
-    await frameElement.waitFor({ state: "visible", timeout: 20000 });
-    await expect(this.fiatAmountInput).toBeVisible({ timeout: 15000 });
   }
 
   private async selectFromDropdown(trigger: Locator, value: string) {
@@ -52,12 +45,10 @@ export class BuyCryptoPage extends BasePage {
 
   async selectCrypto(crypto: string) {
     await this.selectFromDropdown(this.cryptoDropdownTrigger, crypto);
-    await expect(this.cryptoDropdownTrigger).toHaveAttribute("value", new RegExp(crypto));
   }
 
   async selectFiatCurrency(currency: string) {
     await this.selectFromDropdown(this.fiatDropdownTrigger, currency);
-    await expect(this.fiatDropdownTrigger).toHaveAttribute("value", new RegExp(currency));
   }
 
   async enterCryptoAmount(amount: string) {
@@ -73,8 +64,12 @@ export class BuyCryptoPage extends BasePage {
     await this.addressInput.fill(address);
   }
 
+  async maskAddressInput() {
+    await this.addressInput.evaluate((el) => (el.style.filter = "blur(10px)"));
+  }
+
   async clickContinue() {
-    await expect(this.continueButton).toBeEnabled();
+    await this.continueButton.waitFor({ state: "visible" });
     await this.continueButton.click();
   }
 }

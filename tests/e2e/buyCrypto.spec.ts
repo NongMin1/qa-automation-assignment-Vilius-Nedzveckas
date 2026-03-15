@@ -10,14 +10,14 @@ test.describe("buy crypto tests", () => {
     await page.goto("/");
     buyCryptoPage = new BuyCryptoPage(page);
     await buyCryptoPage.navigateToWidget(BUY_CRYPTO_DATA.fiat);
+    await expect(buyCryptoPage.fiatAmountInput).toBeVisible();
   });
 
   test.describe("Positive Test Cases", () => {
     test.fixme("should navigate to Checkout page with legacy Crypto key", async ({ page }) => {
-      //DOES IT HELP? How to solve problem in GitHub Actions where the test gets stuck on walletconnect request?
+      //How to solve problem in GitHub Actions where the test gets stuck on walletconnect request?
       //TODO - headless and headed works locally. In CI it gets stuck on walletconnect request. https://pulse.walletconnect.org/e?projectId={someid} ends with Status code = 400.
       //Payload response: Bad Request - Missing origin header.
-      //TODO maybe even it is not needed to setTimeout
       test.setTimeout(60000);
       const amount = BUY_CRYPTO_DATA.amounts.valid;
       const crypto = BUY_CRYPTO_DATA.crypto;
@@ -26,7 +26,7 @@ test.describe("buy crypto tests", () => {
       await buyCryptoPage.enterMoneyAmount(amount);
 
       await test.step("Enter crypto address (Masked)", async () => {
-        await buyCryptoPage.addressInput.evaluate((el) => (el.style.filter = "blur(10px)"));
+        await buyCryptoPage.maskAddressInput();
         await buyCryptoPage.enterCryptoAddress(btcAddress);
 
         await test.info().attach("masked-address-screenshot", {
@@ -37,8 +37,10 @@ test.describe("buy crypto tests", () => {
 
       await buyCryptoPage.clickContinue();
 
-      await expect(page.locator(".loading-spinner")).toBeHidden({ timeout: 30000 });
-      await expect(page).toHaveURL(/.*simplexcc\.com.*/, { timeout: 60000 });
+      await buyCryptoPage.loadingSpinner.waitFor({ state: "hidden", timeout: 30000 });
+
+      const currentUrl = page.url();
+      expect(currentUrl.includes("simplexcc.com, { timeout: 60000 }")).toBeTruthy();
 
       await expect(page.getByText("Credit/Debit card")).toBeVisible({ timeout: 15000 });
       await expect(page.getByText("Euro Bank Transfer")).toBeVisible({ timeout: 15000 });
@@ -48,23 +50,23 @@ test.describe("buy crypto tests", () => {
   test.describe("Negative Test Cases", () => {
     test("should display an error when entering an amount below the minimum limit", async ({}) => {
       await buyCryptoPage.enterMoneyAmount(BUY_CRYPTO_DATA.amounts.min);
-      await expect(buyCryptoPage.erroMessage).toContainText(/The Euro amount must be between/);
+      await expect(buyCryptoPage.errorMessage).toContainText(/The Euro amount must be between/);
     });
 
     test("should display an error when entering an amount above the maximum limit", async ({}) => {
       await buyCryptoPage.enterMoneyAmount(BUY_CRYPTO_DATA.amounts.max);
-      await expect(buyCryptoPage.erroMessage).toContainText(/The Euro amount must be between/);
+      await expect(buyCryptoPage.errorMessage).toContainText(/The Euro amount must be between/);
     });
 
     test("should display an error when entering non-numeric characters in the amount field", async ({}) => {
       await buyCryptoPage.enterMoneyAmount(BUY_CRYPTO_DATA.amounts.invalid);
       await buyCryptoPage.clickContinue();
-      await expect(buyCryptoPage.erroMessage).toContainText(/Please enter Euro amount/);
+      await expect(buyCryptoPage.errorMessage).toContainText(/Please enter Euro amount/);
     });
 
     test("should display an error when entering non-numeric characters in the crypto amount field", async ({}) => {
       await buyCryptoPage.enterCryptoAmount(BUY_CRYPTO_DATA.amounts.invalid);
-      await expect(buyCryptoPage.erroMessage).toContainText(/Please enter Bitcoin amount/);
+      await expect(buyCryptoPage.errorMessage).toContainText(/Please enter Bitcoin amount/);
     });
 
     test.fixme("should display an error when entering an invalid crypto address", async ({ page }) => {
@@ -79,7 +81,7 @@ test.describe("buy crypto tests", () => {
       expect(response.status()).toBe(400);
       expect(responseBody.isAddressValid).toBe(false);
 
-      await expect(buyCryptoPage.erroMessage).toContainText(/No error message appears. TODO add valid error message/i);
+      await expect(buyCryptoPage.errorMessage).toContainText(/No error message appears. TODO add valid error message/i);
     });
   });
 });
