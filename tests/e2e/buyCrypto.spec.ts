@@ -1,16 +1,15 @@
 import { test, expect } from "@playwright/test";
-import { BasePage } from "../../pages/BasePage";
 import { BuyCryptoPage } from "../../pages/BuyCryptoPage";
+import { BUY_CRYPTO_DATA } from "../data/buyCryptoData";
 
 test.describe("buy crypto tests", () => {
-  let basePage: BasePage;
   let buyCryptoPage: BuyCryptoPage;
   const btcAddress = process.env.DUMMY_BTC_ADDRESS || "";
 
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
-    basePage = new BasePage(page);
     buyCryptoPage = new BuyCryptoPage(page);
+    await buyCryptoPage.navigateToWidget(BUY_CRYPTO_DATA.fiat);
   });
 
   test.describe("Positive Test Cases", () => {
@@ -20,13 +19,8 @@ test.describe("buy crypto tests", () => {
       //Payload response: Bad Request - Missing origin header.
       //TODO maybe even it is not needed to setTimeout
       test.setTimeout(60000);
-      const amount = "200";
-      const crypto = "BTC";
-      const fiat = "EUR";
-
-      await basePage.clickBuyCrypto();
-      await buyCryptoPage.waitForWidgetToBeReady();
-      await buyCryptoPage.selectFiatCurrency(fiat);
+      const amount = BUY_CRYPTO_DATA.amounts.valid;
+      const crypto = BUY_CRYPTO_DATA.crypto;
 
       await buyCryptoPage.selectCrypto(crypto);
       await buyCryptoPage.enterMoneyAmount(amount);
@@ -53,50 +47,30 @@ test.describe("buy crypto tests", () => {
 
   test.describe("Negative Test Cases", () => {
     test("should display an error when entering an amount below the minimum limit", async ({}) => {
-      const fiat = "EUR";
-      await basePage.clickBuyCrypto();
-      await buyCryptoPage.waitForWidgetToBeReady();
-      await buyCryptoPage.selectFiatCurrency(fiat);
-      await buyCryptoPage.enterMoneyAmount("BTC");
-      await buyCryptoPage.enterMoneyAmount("1");
+      await buyCryptoPage.enterMoneyAmount(BUY_CRYPTO_DATA.crypto);
+      await buyCryptoPage.enterMoneyAmount(BUY_CRYPTO_DATA.amounts.min);
       await expect(buyCryptoPage.erroMessage).toContainText(/The Euro amount must be between/);
     });
 
     test("should display an error when entering an amount above the maximum limit", async ({}) => {
-      const fiat = "EUR";
-      await basePage.clickBuyCrypto();
-      await buyCryptoPage.waitForWidgetToBeReady();
-      await buyCryptoPage.selectFiatCurrency(fiat);
-      await buyCryptoPage.enterMoneyAmount("200000");
+      await buyCryptoPage.enterMoneyAmount(BUY_CRYPTO_DATA.amounts.max);
       await expect(buyCryptoPage.erroMessage).toContainText(/The Euro amount must be between/);
     });
 
     test("should display an error when entering non-numeric characters in the amount field", async ({}) => {
-      const fiat = "EUR";
-      await basePage.clickBuyCrypto();
-      await buyCryptoPage.waitForWidgetToBeReady();
-      await buyCryptoPage.selectFiatCurrency(fiat);
-      await buyCryptoPage.enterMoneyAmount("abc");
+      await buyCryptoPage.enterMoneyAmount(BUY_CRYPTO_DATA.amounts.invalid);
       await buyCryptoPage.clickContinue();
       await expect(buyCryptoPage.erroMessage).toContainText(/Please enter Euro amount/);
     });
 
     test("should display an error when entering non-numeric characters in the crypto amount field", async ({}) => {
-      const fiat = "EUR";
-      await basePage.clickBuyCrypto();
-      await buyCryptoPage.waitForWidgetToBeReady();
-      await buyCryptoPage.selectFiatCurrency(fiat);
-      await buyCryptoPage.enterCryptoAmount("abc");
+      await buyCryptoPage.enterCryptoAmount(BUY_CRYPTO_DATA.amounts.invalid);
       await expect(buyCryptoPage.erroMessage).toContainText(/Please enter Bitcoin amount/);
     });
 
     test.fixme("should display an error when entering an invalid crypto address", async ({ page }) => {
-      const fiat = "EUR";
-      await basePage.clickBuyCrypto();
-      await buyCryptoPage.waitForWidgetToBeReady();
-      await buyCryptoPage.selectFiatCurrency(fiat);
-      await buyCryptoPage.enterMoneyAmount("200");
-      await buyCryptoPage.enterCryptoAddress("asd");
+      await buyCryptoPage.enterMoneyAmount(BUY_CRYPTO_DATA.amounts.valid);
+      await buyCryptoPage.enterCryptoAddress(BUY_CRYPTO_DATA.invalidAddress);
       await buyCryptoPage.clickContinue();
       const responsePromise = page.waitForResponse((resp) => resp.request().method() === "POST" && resp.url().includes("pulse.walletconnect"));
 

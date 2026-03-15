@@ -23,6 +23,12 @@ export class BuyCryptoPage extends BasePage {
     this.erroMessage = this.widgetFrame.locator(".error-tooltip");
   }
 
+  async navigateToWidget(fiat: string) {
+    await this.clickBuyCrypto();
+    await this.waitForWidgetToBeReady();
+    await this.selectFiatCurrency(fiat);
+  }
+
   async waitForWidgetToBeReady() {
     const frameElement = this.page.locator('iframe[src*="simplex-affiliates.com"]').first();
 
