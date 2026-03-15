@@ -21,7 +21,7 @@ export class BuyCryptoPage extends BasePage {
     this.addressInput = this.widgetFrame.locator('input[id="cryptoAddress"]');
     this.continueButton = this.widgetFrame.locator("button.simplex-continue-button");
     this.cryptoDropdownTrigger = this.widgetFrame.locator("input.crypto-dd");
-    this.errorMessage = this.widgetFrame.locator("div.error-tooltip");
+    this.errorMessage = this.widgetFrame.locator("span.error-tooltip");
     this.loadingSpinner = page.locator(".loading-spinner");
   }
 
