@@ -21,13 +21,9 @@ export class BuyCryptoPage extends BasePage {
 
   async waitForWidgetToBeReady() {
     const frameElement = this.page.locator('iframe[src*="simplex-affiliates.com"]').first();
+
     await frameElement.waitFor({ state: "attached" });
-
-    await this.page.waitForFunction(() => {
-      const frame = document.querySelector('iframe[src*="simplex-affiliates.com"]') as HTMLIFrameElement;
-      return frame?.contentWindow?.location.href !== "about:blank";
-    });
-
+    await frameElement.waitFor({ state: "visible", timeout: 20000 });
     await expect(this.fiatAmountInput).toBeVisible({ timeout: 15000 });
   }
 
