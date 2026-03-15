@@ -37,28 +37,24 @@ export class BuyCryptoPage extends BasePage {
     await expect(this.fiatAmountInput).toBeVisible({ timeout: 15000 });
   }
 
-  async selectCrypto(crypto: string) {
-    const fullValue = await this.cryptoDropdownTrigger.getAttribute("value");
+  private async selectFromDropdown(trigger: Locator, value: string) {
+    const fullValue = await trigger.getAttribute("value");
     const currentValue = fullValue?.split(" ")[0];
 
-    if (currentValue !== crypto) {
-      await this.cryptoDropdownTrigger.click();
-      const option = this.widgetFrame.locator("ul.autocomplete-results li").getByText(crypto, { exact: true });
+    if (currentValue !== value) {
+      await trigger.click();
+      const option = this.widgetFrame.locator("ul.autocomplete-results li").getByText(value, { exact: true });
       await option.click();
-
-      await expect(this.cryptoDropdownTrigger).toHaveAttribute("value", new RegExp(crypto));
     }
   }
 
-  async selectFiatCurrency(currency: string) {
-    const fullValue = await this.fiatDropdownTrigger.getAttribute("value");
-    const currentValue = fullValue?.split(" ")[0];
+  async selectCrypto(crypto: string) {
+    await this.selectFromDropdown(this.cryptoDropdownTrigger, crypto);
+    await expect(this.cryptoDropdownTrigger).toHaveAttribute("value", new RegExp(crypto));
+  }
 
-    if (currentValue !== currency) {
-      await this.fiatDropdownTrigger.click();
-      const option = this.widgetFrame.locator("ul.autocomplete-results li").getByText(currency, { exact: true });
-      await option.click();
-    }
+  async selectFiatCurrency(currency: string) {
+    await this.selectFromDropdown(this.fiatDropdownTrigger, currency);
   }
 
   async enterCryptoAmount(amount: string) {

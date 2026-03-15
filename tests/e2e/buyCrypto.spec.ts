@@ -47,7 +47,6 @@ test.describe("buy crypto tests", () => {
 
   test.describe("Negative Test Cases", () => {
     test("should display an error when entering an amount below the minimum limit", async ({}) => {
-      await buyCryptoPage.enterMoneyAmount(BUY_CRYPTO_DATA.crypto);
       await buyCryptoPage.enterMoneyAmount(BUY_CRYPTO_DATA.amounts.min);
       await expect(buyCryptoPage.erroMessage).toContainText(/The Euro amount must be between/);
     });
