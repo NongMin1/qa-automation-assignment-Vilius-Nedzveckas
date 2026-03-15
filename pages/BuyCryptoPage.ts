@@ -6,17 +6,27 @@ export class BuyCryptoPage extends BasePage {
   readonly cryptoAmountInput: Locator;
   readonly cryptoDropdownTrigger: Locator;
   readonly fiatAmountInput: Locator;
+  readonly fiatDropdownTrigger: Locator;
   readonly addressInput: Locator;
   readonly continueButton: Locator;
+  readonly erroMessage: Locator;
 
   constructor(page: Page) {
     super(page);
     this.widgetFrame = page.frameLocator('iframe[src*="/form"]');
     this.cryptoAmountInput = this.widgetFrame.locator("#crypto_amount");
     this.fiatAmountInput = this.widgetFrame.locator("#fiat_amount");
+    this.fiatDropdownTrigger = this.widgetFrame.locator("input.fiat-dd");
     this.addressInput = this.widgetFrame.locator("#cryptoAddress");
     this.continueButton = this.widgetFrame.locator("button.simplex-continue-button");
     this.cryptoDropdownTrigger = this.widgetFrame.locator("input.crypto-dd");
+    this.erroMessage = this.widgetFrame.locator(".error-tooltip");
+  }
+
+  async navigateToWidget(fiat: string) {
+    await this.clickBuyCrypto();
+    await this.waitForWidgetToBeReady();
+    await this.selectFiatCurrency(fiat);
   }
 
   async waitForWidgetToBeReady() {
@@ -27,17 +37,24 @@ export class BuyCryptoPage extends BasePage {
     await expect(this.fiatAmountInput).toBeVisible({ timeout: 15000 });
   }
 
-  async selectCrypto(crypto: string) {
-    const fullValue = await this.cryptoDropdownTrigger.getAttribute("value");
+  private async selectFromDropdown(trigger: Locator, value: string) {
+    const fullValue = await trigger.getAttribute("value");
     const currentValue = fullValue?.split(" ")[0];
 
-    if (currentValue !== crypto) {
-      await this.cryptoDropdownTrigger.click();
-      const option = this.widgetFrame.locator("ul.autocomplete-results li").getByText(crypto, { exact: true });
+    if (currentValue !== value) {
+      await trigger.click();
+      const option = this.widgetFrame.locator("ul.autocomplete-results li").getByText(value, { exact: true });
       await option.click();
-
-      await expect(this.cryptoDropdownTrigger).toHaveAttribute("value", new RegExp(crypto));
     }
+  }
+
+  async selectCrypto(crypto: string) {
+    await this.selectFromDropdown(this.cryptoDropdownTrigger, crypto);
+    await expect(this.cryptoDropdownTrigger).toHaveAttribute("value", new RegExp(crypto));
+  }
+
+  async selectFiatCurrency(currency: string) {
+    await this.selectFromDropdown(this.fiatDropdownTrigger, currency);
   }
 
   async enterCryptoAmount(amount: string) {

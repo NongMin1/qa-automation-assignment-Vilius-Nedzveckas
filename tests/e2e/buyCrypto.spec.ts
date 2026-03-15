@@ -1,16 +1,15 @@
 import { test, expect } from "@playwright/test";
-import { BasePage } from "../../pages/BasePage";
 import { BuyCryptoPage } from "../../pages/BuyCryptoPage";
+import { BUY_CRYPTO_DATA } from "../data/buyCryptoData";
 
 test.describe("buy crypto tests", () => {
-  let basePage: BasePage;
   let buyCryptoPage: BuyCryptoPage;
   const btcAddress = process.env.DUMMY_BTC_ADDRESS || "";
 
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
-    basePage = new BasePage(page);
     buyCryptoPage = new BuyCryptoPage(page);
+    await buyCryptoPage.navigateToWidget(BUY_CRYPTO_DATA.fiat);
   });
 
   test.describe("Positive Test Cases", () => {
@@ -20,11 +19,8 @@ test.describe("buy crypto tests", () => {
       //Payload response: Bad Request - Missing origin header.
       //TODO maybe even it is not needed to setTimeout
       test.setTimeout(60000);
-      const amount = "200";
-      const crypto = "BTC";
-
-      await basePage.clickBuyCrypto();
-      await buyCryptoPage.waitForWidgetToBeReady();
+      const amount = BUY_CRYPTO_DATA.amounts.valid;
+      const crypto = BUY_CRYPTO_DATA.crypto;
 
       await buyCryptoPage.selectCrypto(crypto);
       await buyCryptoPage.enterMoneyAmount(amount);
@@ -50,37 +46,40 @@ test.describe("buy crypto tests", () => {
   });
 
   test.describe("Negative Test Cases", () => {
-    test.fixme("should display an error when entering an amount below the minimum limit", async ({ page }) => {
-      await basePage.clickBuyCrypto();
-      await buyCryptoPage.waitForWidgetToBeReady();
-      await buyCryptoPage.selectCrypto("BTC");
-      await buyCryptoPage.enterMoneyAmount("10");
-      await expect(page.getByText("Minimum amount is")).toBeVisible();
+    test("should display an error when entering an amount below the minimum limit", async ({}) => {
+      await buyCryptoPage.enterMoneyAmount(BUY_CRYPTO_DATA.amounts.min);
+      await expect(buyCryptoPage.erroMessage).toContainText(/The Euro amount must be between/);
     });
 
-    test.fixme("should display an error when entering an amount above the maximum limit", async ({ page }) => {
-      await basePage.clickBuyCrypto();
-      await buyCryptoPage.waitForWidgetToBeReady();
-      await buyCryptoPage.selectCrypto("BTC");
-      await buyCryptoPage.enterMoneyAmount("200000");
-      await expect(page.getByText("Maximum amount is")).toBeVisible();
+    test("should display an error when entering an amount above the maximum limit", async ({}) => {
+      await buyCryptoPage.enterMoneyAmount(BUY_CRYPTO_DATA.amounts.max);
+      await expect(buyCryptoPage.erroMessage).toContainText(/The Euro amount must be between/);
     });
 
-    test.fixme("should display an error when entering non-numeric characters in the amount field", async ({ page }) => {
-      await basePage.clickBuyCrypto();
-      await buyCryptoPage.waitForWidgetToBeReady();
-      await buyCryptoPage.selectCrypto("BTC");
-      await buyCryptoPage.enterMoneyAmount("abc");
+    test("should display an error when entering non-numeric characters in the amount field", async ({}) => {
+      await buyCryptoPage.enterMoneyAmount(BUY_CRYPTO_DATA.amounts.invalid);
       await buyCryptoPage.clickContinue();
-      await expect(page.getByText("Please enter a valid amount")).toBeVisible();
+      await expect(buyCryptoPage.erroMessage).toContainText(/Please enter Euro amount/);
     });
 
-    test.fixme("should display an error when selecting an unsupported cryptocurrency", async ({ page }) => {
-      await basePage.clickBuyCrypto();
-      await buyCryptoPage.waitForWidgetToBeReady();
-      // Requires a method to search without selecting, e.g.:
-      // await buyCryptoPage.searchCrypto("INVALID_COIN");
-      // await expect(page.getByText("No results found")).toBeVisible();
+    test("should display an error when entering non-numeric characters in the crypto amount field", async ({}) => {
+      await buyCryptoPage.enterCryptoAmount(BUY_CRYPTO_DATA.amounts.invalid);
+      await expect(buyCryptoPage.erroMessage).toContainText(/Please enter Bitcoin amount/);
+    });
+
+    test.fixme("should display an error when entering an invalid crypto address", async ({ page }) => {
+      await buyCryptoPage.enterMoneyAmount(BUY_CRYPTO_DATA.amounts.valid);
+      await buyCryptoPage.enterCryptoAddress(BUY_CRYPTO_DATA.invalidAddress);
+      await buyCryptoPage.clickContinue();
+      const responsePromise = page.waitForResponse((resp) => resp.request().method() === "POST" && resp.url().includes("pulse.walletconnect"));
+
+      const response = await responsePromise;
+      const responseBody = await response.json();
+
+      expect(response.status()).toBe(400);
+      expect(responseBody.isAddressValid).toBe(false);
+
+      await expect(buyCryptoPage.erroMessage).toContainText(/No error message appears. TODO add valid error message/i);
     });
   });
 });
