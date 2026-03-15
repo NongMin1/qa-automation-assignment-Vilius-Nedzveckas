@@ -9,7 +9,7 @@ export default defineConfig({
   reporter: [["list"], ["html", { open: "never" }]],
   fullyParallel: true,
   retries: 1,
-
+  timeout: process.env.CI ? 60 * 1000 : 30 * 1000,
   use: {
     baseURL: process.env.BASE_URL || "",
     storageState: "playwright/.auth/storageState.json",
