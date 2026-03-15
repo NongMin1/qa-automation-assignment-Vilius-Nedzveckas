@@ -9,6 +9,7 @@ export default defineConfig({
   reporter: [["list"], ["html", { open: "never" }], ["junit", { outputFile: "test-results/results.xml" }]],
   fullyParallel: true,
   retries: 1,
+
   use: {
     baseURL: process.env.BASE_URL || "",
     storageState: "playwright/.auth/storageState.json",
