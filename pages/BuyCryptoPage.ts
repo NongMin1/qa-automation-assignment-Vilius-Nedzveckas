@@ -8,6 +8,7 @@ export class BuyCryptoPage extends BasePage {
   readonly fiatAmountInput: Locator;
   readonly addressInput: Locator;
   readonly continueButton: Locator;
+  readonly erroMessage: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -17,6 +18,7 @@ export class BuyCryptoPage extends BasePage {
     this.addressInput = this.widgetFrame.locator("#cryptoAddress");
     this.continueButton = this.widgetFrame.locator("button.simplex-continue-button");
     this.cryptoDropdownTrigger = this.widgetFrame.locator("input.crypto-dd");
+    this.erroMessage = this.widgetFrame.locator(".error-tooltip");
   }
 
   async waitForWidgetToBeReady() {
